@@ -243,7 +243,8 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
-vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm direction=float<CR>', { desc = 'Toggle floating terminal' })
+-- NOTE: Terminal config
+vim.keymap.set('n', '<C-\\>', '<cmd>ToggleTerm direction=float<CR>', { desc = 'Toggle floating terminal' })
 
 vim.keymap.set('n', '<leader>tv', function()
   require('toggleterm.terminal').Terminal:new({ direction = 'vertical' }):toggle()
@@ -252,6 +253,30 @@ end, { desc = 'New vertical terminal' })
 vim.keymap.set('n', '<leader>th', function()
   require('toggleterm.terminal').Terminal:new({ direction = 'horizontal', size = 15 }):toggle()
 end, { desc = 'New horizontal terminal' })
+
+local silent = { silent = true }
+
+-- Navigate buffers
+vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', silent)
+vim.keymap.set('n', '<A-.>', '<Cmd>BufferNext<CR>', silent)
+
+-- Re-order buffers
+vim.keymap.set('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', silent)
+vim.keymap.set('n', '<A->>', '<Cmd>BufferMoveNext<CR>', silent)
+
+-- Go to buffer in position...
+for i = 1, 9 do
+  vim.keymap.set('n', '<A-' .. i .. '>', '<Cmd>BufferGoto ' .. i .. '<CR>', silent)
+end
+vim.keymap.set('n', '<A-0>', '<Cmd>BufferLast<CR>', silent)
+vim.keymap.set('n', '<leader>ub', '<Cmd>BufferRestore<CR>', { silent = true, desc = '[B]uffer' })
+-- Close buffer
+vim.keymap.set('n', '<A-w>', '<Cmd>BufferClose<CR>', { silent = true })
+
+vim.keymap.set('n', '<leader>sf', function()
+  vim.cmd 'vsplit'
+  vim.cmd('edit ' .. vim.fn.input 'Open file: ')
+end, { desc = 'Vertical Split and Open File' })
 
 -- [[ Configure and install plugins ]]
 --
@@ -265,6 +290,17 @@ end, { desc = 'New horizontal terminal' })
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  {
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
+    opts = {},
+  },
   {
     'akinsho/toggleterm.nvim',
     version = '*',
@@ -389,6 +425,7 @@ require('lazy').setup({
       -- Document existing key chains
       spec = {
         { '<leader>s', group = '[S]earch' },
+        { '<leader>u', group = '[U]ndo' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
