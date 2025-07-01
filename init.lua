@@ -305,8 +305,13 @@ end, { desc = '[B]uffer [S]plit' })
 --  To update plugins you can run
 --    :Lazy update
 --
+-- { import = 'custom.plugins' },
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  {
+    'nvim-java/nvim-java',
+  },
   {
     'romgrk/barbar.nvim',
     dependencies = {
@@ -329,6 +334,10 @@ require('lazy').setup({
         float_opts = {
           border = 'curved',
         },
+        on_create = function(term)
+          local cwd = vim.fn.expand '%:p:h'
+          term.dir = cwd
+        end,
       }
     end,
   },
@@ -585,6 +594,7 @@ require('lazy').setup({
       'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       'jay-babu/mason-nvim-dap.nvim',
+      'nvim-java/nvim-java',
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
 
@@ -772,11 +782,6 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         gopls = {},
-        jdtls = {
-          dependencies = {
-            'mfussenegger/nvim-jdtls',
-          },
-        },
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -834,6 +839,10 @@ require('lazy').setup({
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
+          end,
+          jdtls = function()
+            require('java').setup {}
+            require('lspconfig').jdtls.setup {}
           end,
         },
       }
@@ -1092,7 +1101,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  { import = 'custom.plugins' },
+  -- { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
