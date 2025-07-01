@@ -250,8 +250,8 @@ vim.keymap.set('n', '<leader>tv', function()
   require('toggleterm.terminal').Terminal:new({ direction = 'vertical' }):toggle()
 end, { desc = 'New vertical terminal' })
 
-vim.keymap.set('n', '<leader>th', function()
-  require('toggleterm.terminal').Terminal:new({ direction = 'horizontal', size = 15 }):toggle()
+vim.keymap.set('n', '<leader>tt', function()
+  require('toggleterm.terminal').Terminal:new({ direction = 'horizontal', size = 55 }):toggle()
 end, { desc = 'New horizontal terminal' })
 
 local silent = { silent = true }
@@ -269,14 +269,31 @@ for i = 1, 9 do
   vim.keymap.set('n', '<A-' .. i .. '>', '<Cmd>BufferGoto ' .. i .. '<CR>', silent)
 end
 vim.keymap.set('n', '<A-0>', '<Cmd>BufferLast<CR>', silent)
-vim.keymap.set('n', '<leader>ub', '<Cmd>BufferRestore<CR>', { silent = true, desc = '[B]uffer' })
+vim.keymap.set('n', '<leader>ub', '<Cmd>BufferRestore<CR>', { silent = true, desc = ' [U]ndo [B]uffer' })
 -- Close buffer
 vim.keymap.set('n', '<A-w>', '<Cmd>BufferClose<CR>', { silent = true })
 
-vim.keymap.set('n', '<leader>sf', function()
+vim.keymap.set('n', '<leader>bo', function()
+  vim.cmd 'vsplit' -- Split the window vertically
+
+  -- Use Telescope to pick a file and open it in the new split
+  require('telescope.builtin').find_files {
+    attach_mappings = function(_, map)
+      map('i', '<CR>', function(prompt_bufnr)
+        local action_state = require 'telescope.actions.state'
+        local actions = require 'telescope.actions'
+        local file = action_state.get_selected_entry().value
+        actions.close(prompt_bufnr)
+        vim.cmd('edit ' .. file)
+      end)
+      return true
+    end,
+  }
+end, { desc = '[B]uffer split and [O]pen file with Telescope' })
+
+vim.keymap.set('n', '<leader>bs', function()
   vim.cmd 'vsplit'
-  vim.cmd('edit ' .. vim.fn.input 'Open file: ')
-end, { desc = 'Vertical Split and Open File' })
+end, { desc = '[B]uffer [S]plit' })
 
 -- [[ Configure and install plugins ]]
 --
@@ -427,6 +444,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>u', group = '[U]ndo' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>b', group = '[B]uffer' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
