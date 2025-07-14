@@ -256,6 +256,7 @@ end, { desc = 'New horizontal terminal' })
 
 local silent = { silent = true }
 
+-- Tabs
 -- Navigate buffers
 vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', silent)
 vim.keymap.set('n', '<A-.>', '<Cmd>BufferNext<CR>', silent)
@@ -310,7 +311,7 @@ end, { desc = '[B]uffer [S]plit' })
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   {
-    'nvim-java/nvim-java',
+    'mfussenegger/nvim-jdtls',
   },
   {
     'romgrk/barbar.nvim',
@@ -840,10 +841,6 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
-          jdtls = function()
-            require('java').setup {}
-            require('lspconfig').jdtls.setup {}
-          end,
         },
       }
 
@@ -1061,7 +1058,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'java' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
